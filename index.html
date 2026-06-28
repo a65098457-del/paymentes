@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAYMENT CATA</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #080808; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; overflow-x: hidden; }
+
+/* === PARTICLE BG === */
+.particle { position: fixed; border-radius: 50%; background: #3b82f6; pointer-events: none; z-index: 0; opacity: 0.3; animation: float linear infinite; }
+@keyframes float { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { transform: translateY(-100vh) translateX(30px); opacity: 0; } }
+
+/* === SNOW === */
+.snow-container { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+.snowflake { position: absolute; top: -10px; color: #3b82f6; opacity: 0.5; animation: fall linear infinite; }
+@keyframes fall { 0% { transform: translateY(-10px); opacity: 0.7; } 100% { transform: translateY(100vh); opacity: 0.2; } }
+
+/* === LOADING === */
+#loader { position: fixed; inset: 0; background: #080808; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+#loader.hidden { opacity: 0; pointer-events: none; }
+.loader-bar { width: 200px; height: 3px; background: #1a1a1a; border-radius: 3px; overflow: hidden; margin-top: 20px; }
+.loader-fill { height: 100%; width: 0%; background: #3b82f6; border-radius: 3px; box-shadow: 0 0 10px #3b82f6; transition: width 0.1s linear; }
+.loader-text { color: #3b82f6; font-size: 12px; margin-top: 10px; letter-spacing: 2px; }
+
+/* === WELCOME === */
+#welcome { position: fixed; inset: 0; background: #080808; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; transition: opacity 0.5s ease; opacity: 0; pointer-events: none; }
+#welcome.active { opacity: 1; pointer-events: all; }
+#welcome.hidden { opacity: 0; pointer-events: none; }
+.welcome-content { text-align: center; padding: 20px; position: relative; z-index: 2; }
+.welcome-avatar { width: 120px; height: 120px; border-radius: 50%; border: 2px solid #3b82f6; box-shadow: 0 0 25px rgba(59,130,246,0.35); margin: 0 auto 25px auto; background: #0d0d0d; display: flex; align-items: center; justify-content: center; position: relative; }
+.welcome-avatar::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid #3b82f6; opacity: 0.5; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 0.8; } }
+.welcome-avatar .logo-c { font-family: 'Black Ops One', 'Arial Black', Impact, sans-serif; font-size: 56px; color: #fff; text-shadow: 0 0 12px #3b82f6; line-height: 1; position: relative; z-index: 2; }
+.welcome-title { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 10px; letter-spacing: 0.5px; min-height: 40px; }
+.welcome-subtitle { font-size: 15px; color: #aaa; margin-bottom: 35px; }
+.welcome-btn { padding: 14px 45px; border-radius: 25px; border: none; background: #3b82f6; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px rgba(59,130,246,0.4); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; }
+.welcome-btn:hover { background: #2563eb; box-shadow: 0 0 35px rgba(59,130,246,0.6); transform: translateY(-2px); }
+
+/* === LANDING === */
+#landing { display: none; min-height: 100vh; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.6s ease; }
+#landing.active { display: flex; opacity: 1; }
+.container { width: 100%; max-width: 360px; padding: 42px 28px 30px; display: flex; flex-direction: column; align-items: center; }
+.logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
+.logo-wrapper::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: #3b82f6; filter: blur(12px); opacity: 0.4; }
+.logo-wrapper::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid #3b82f6; box-shadow: 0 0 20px rgba(59,130,246,0.5), inset 0 0 20px rgba(59,130,246,0.1); }
+.logo-inner { position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #0d0d0d; display: flex; align-items: center; justify-content: center; z-index: 1; }
+.logo-c { font-family: 'Black Ops One', 'Arial Black', Impact, sans-serif; font-size: 72px; color: #fff; text-shadow: 0 0 15px #3b82f6, 0 0 40px rgba(59,130,246,0.6); line-height: 1; }
+.divider { width: 48px; height: 2.5px; background: #3b82f6; border-radius: 2px; margin-bottom: 30px; box-shadow: 0 0 11px rgba(59,130,246,0.55); }
+.title { font-family: 'Black Ops One', 'Arial Black', Impact, sans-serif; font-size: 38px; font-weight: normal; letter-spacing: 1px; margin-bottom: 45px; text-transform: uppercase; line-height: 1; white-space: nowrap; background: linear-gradient(90deg, #e0e7ff 0%, #c7d2fe 20%, #a5b4fc 40%, #818cf8 55%, #6366f1 70%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(59,130,246,0.4)); }
+.btn { width: 100%; padding: 18px 22px; border-radius: 16px; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all 0.25s ease; text-decoration: none; margin-bottom: 14px; border: none; }
+.btn-payment { background: #3b82f6; color: #fff; box-shadow: 0 0 32px rgba(59,130,246,0.42), 0 4px 18px rgba(59,130,246,0.28); margin-bottom: 20px; }
+.btn-payment:hover { background: #2563eb; box-shadow: 0 0 42px rgba(59,130,246,0.58), 0 5px 24px rgba(59,130,246,0.38); transform: translateY(-1.5px); }
+.btn-outline { background: #111; color: #3b82f6; border: 1.3px solid #3b82f6; box-shadow: 0 0 12px rgba(59,130,246,0.07); margin-bottom: 20px; }
+.btn-outline:hover { background: #1a1a1a; box-shadow: 0 0 22px rgba(59,130,246,0.18); transform: translateY(-1px); }
+.btn-row { display: flex; gap: 12px; width: 100%; }
+.btn-row .btn { flex: 1; margin-bottom: 0; }
+.icon { font-size: 18px; display: flex; align-items: center; justify-content: center; }
+.footer { margin-top: 30px; color: #3b82f6; font-size: 12px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; opacity: 0.85; }
+
+/* === MODAL === */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+.modal-overlay.active { display: flex; }
+.modal-box { background: #111; border: 1.5px solid #3b82f6; border-radius: 16px; padding: 24px 20px 20px; box-shadow: 0 0 50px rgba(59,130,246,0.35); text-align: center; max-width: 340px; width: 100%; position: relative; }
+.modal-close { position: absolute; top: 8px; right: 8px; background: #3b82f6; border: none; color: #fff; font-size: 14px; cursor: pointer; transition: all 0.2s ease; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 8px; box-shadow: 0 0 10px rgba(59,130,246,0.5); z-index: 10; }
+.modal-close:hover { background: #2563eb; box-shadow: 0 0 18px rgba(59,130,246,0.7); transform: scale(1.1); }
+.modal-title { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.modal-desc { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+.qr-placeholder { width: 100%; aspect-ratio: 1; border-radius: 12px; margin-bottom: 16px; border: 2px dashed #3b82f6; background: #0d0d0d; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #3b82f6; font-size: 14px; padding: 20px; text-align: center; }
+.qr-placeholder svg { width: 60px; height: 60px; fill: #3b82f6; opacity: 0.5; }
+.qr-placeholder p { opacity: 0.7; line-height: 1.5; }
+.modal-btn { padding: 12px 28px; font-size: 14px; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; transition: all 0.25s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.modal-btn-download { background: #3b82f6; color: #fff; box-shadow: 0 0 20px rgba(59,130,246,0.4); }
+.modal-btn-download:hover { background: #2563eb; box-shadow: 0 0 30px rgba(59,130,246,0.6); transform: translateY(-1px); }
+.modal-btn-copy { background: #3b82f6; color: #fff; box-shadow: 0 0 20px rgba(59,130,246,0.4); }
+.modal-btn-copy:hover { background: #2563eb; box-shadow: 0 0 30px rgba(59,130,246,0.6); transform: translateY(-1px); }
+.modal-btn-copy.copied { background: #00cc00; box-shadow: 0 0 20px rgba(0,204,0,0.4); }
+.dana-number { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 20px; text-shadow: 0 0 10px rgba(59,130,246,0.3); padding-top: 8px; }
+.dana-number span { color: #3b82f6; text-shadow: 0 0 15px rgba(59,130,246,0.5); }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div id="particleContainer"></div>
+
+<!-- SNOW -->
+<div class="snow-container" id="snowContainer"></div>
+
+<!-- LOADER -->
+<div id="loader">
+    <div class="logo-c" style="font-size:48px;text-shadow:0 0 20px #3b82f6">C</div>
+    <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+    <div class="loader-text">LOADING...</div>
+</div>
+
+<!-- WELCOME -->
+<div id="welcome">
+    <div class="welcome-content">
+        <div class="welcome-avatar">
+            <div class="logo-c">C</div>
+        </div>
+        <div class="welcome-title" id="typeText"></div>
+        <div class="welcome-subtitle">Selamat Datang Di Website Payment.</div>
+        <button class="welcome-btn" onclick="goToLanding()">PAYMENT</button>
+    </div>
+</div>
+
+<!-- LANDING -->
+<div id="landing">
+    <div class="container">
+        <div class="logo-wrapper">
+            <div class="logo-inner">
+                <div class="logo-c">C</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="title">PAYMENT CATA</div>
+
+        <a href="#" class="btn btn-payment" onclick="showModal(event)">
+            <span class="icon"><i class="fa-solid fa-qrcode"></i></span>
+            <span>QRIS ALL PAY</span>
+        </a>
+        <a href="#" class="btn btn-outline" onclick="showDanaModal(event)">
+            <span class="icon"><i class="fa-solid fa-wallet"></i></span>
+            <span>Nomor Dana</span>
+        </a>
+        <div class="btn-row">
+            <a href="tg://resolve?domain=catabwl" class="btn btn-outline">
+                <span class="icon"><i class="fa-brands fa-telegram"></i></span>
+                <span>Telegram</span>
+            </a>
+            <a href="https://whatsapp.com/channel/0029VbCLezuIt5rmgjUeup2U" class="btn btn-outline">
+                <span class="icon"><i class="fa-brands fa-whatsapp"></i></span>
+                <span>Testimoni</span>
+            </a>
+        </div>
+        <div class="footer">WEB ALL PAYMENT CATA</div>
+    </div>
+</div>
+
+<!-- QRIS MODAL -->
+<div class="modal-overlay" id="qrisModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeQrisModal()" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
+        <div class="qr-placeholder" id="qrisPlaceholder">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 15h6v6H3v-6zm2 2v2h2v-2H5zm13-2h3v3h-3v-3zm-3 3h3v3h-3v-3zm3 3h3v3h-3v-3zm-3-6h3v3h-3v-3zm6 0h3v3h-3v-3zM12 6h3v3h-3V6zm-3 3h3v3H9V9zm6 0h3v3h-3V9zm-6 3h3v3H9v-3zm6 0h3v3h-3v-3z"/></svg>
+            <p>Ganti ini dengan gambar QRIS<br>Upload payment-qr.jpg ke folder yang sama</p>
+        </div>
+        <a href="#" download="qris-payment.jpg" class="modal-btn modal-btn-download" id="downloadBtn" onclick="downloadQR(event)"><i class="fa-solid fa-download"></i><span>Download QRIS</span></a>
+    </div>
+</div>
+
+<!-- DANA MODAL -->
+<div class="modal-overlay" id="danaModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeDanaModal()" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
+        <div class="dana-number">DANA: <span id="danaNum">083187839451</span></div>
+        <button class="modal-btn modal-btn-copy" id="copyBtn" onclick="copyDana()"><i class="fa-solid fa-copy"></i><span id="copyText">Copy</span></button>
+    </div>
+</div>
+
+<audio id="bgMusic" loop preload="auto" style="display:none">
+    <source src="https://files.catbox.moe/5w1dyc.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// === PARTICLES ===
+(function(){
+    var c=document.getElementById('particleContainer');
+    for(var i=0;i<15;i++){
+        var p=document.createElement('div');p.className='particle';
+        p.style.left=Math.random()*100+'vw';
+        p.style.top=Math.random()*100+'vh';
+        p.style.width=p.style.height=(Math.random()*4+2)+'px';
+        p.style.animationDuration=(Math.random()*10+8)+'s';
+        p.style.animationDelay=Math.random()*5+'s';
+        c.appendChild(p);
+    }
+})();
+
+// === SNOW ===
+(function(){
+    var c=document.getElementById('snowContainer'),ch=['❄','•'];
+    for(var i=0;i<15;i++){
+        var f=document.createElement('div');f.className='snowflake';
+        f.textContent=ch[Math.floor(Math.random()*ch.length)];
+        f.style.left=Math.random()*100+'%';
+        f.style.animationDuration=(Math.random()*4+4)+'s';
+        f.style.animationDelay=Math.random()*5+'s';
+        f.style.fontSize=(Math.random()*6+6)+'px';
+        c.appendChild(f);
+    }
+})();
+
+// === LOADING ===
+(function(){
+    var fill=document.getElementById('loaderFill'),pct=0;
+    var iv=setInterval(function(){
+        pct+=Math.random()*15+5;
+        if(pct>=100){pct=100;clearInterval(iv);
+            setTimeout(function(){
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('welcome').classList.add('active');
+                startTyping();
+            },400);
+        }
+        fill.style.width=pct+'%';
+    },150);
+})();
+
+// === TYPING ===
+function startTyping(){
+    var txt="Hai, Saya Cata",el=document.getElementById('typeText'),i=0;
+    el.textContent="";
+    var iv=setInterval(function(){
+        if(i<txt.length){el.textContent+=txt.charAt(i);i++;}
+        else{clearInterval(iv);}
+    },100);
+}
+
+// === NAVIGATION ===
+function goToLanding(){
+    document.getElementById('welcome').classList.add('hidden');
+    document.getElementById('landing').classList.add('active');
+    var audio=document.getElementById('bgMusic');
+    audio.volume=0.5;
+    audio.play().catch(function(){});
+}
+
+// === QRIS MODAL ===
+function showModal(e){e.preventDefault();document.getElementById('qrisModal').classList.add('active');}
+function closeQrisModal(){document.getElementById('qrisModal').classList.remove('active');}
+function downloadQR(e){
+    e.preventDefault();
+    var img=document.createElement('img');
+    img.src='payment-qr.jpg';
+    img.onload=function(){
+        var a=document.createElement('a');
+        a.href=img.src;
+        a.download='qris-payment.jpg';
+        a.click();
+    };
+    img.onerror=function(){alert('File payment-qr.jpg tidak ditemukan!');};
+}
+
+// === DANA MODAL ===
+function showDanaModal(e){e.preventDefault();document.getElementById('danaModal').classList.add('active');}
+function closeDanaModal(){document.getElementById('danaModal').classList.remove('active');}
+function copyDana(){
+    var num=document.getElementById('danaNum').textContent;
+    navigator.clipboard.writeText(num).then(function(){
+        var btn=document.getElementById('copyBtn');
+        var txt=document.getElementById('copyText');
+        btn.classList.add('copied');
+        txt.textContent='Copied!';
+        setTimeout(function(){btn.classList.remove('copied');txt.textContent='Copy';},2000);
+    }).catch(function(){alert('Gagal copy: '+num);});
+}
+
+// === CLOSE MODAL ON BACKDROP CLICK ===
+document.querySelectorAll('.modal-overlay').forEach(function(m){
+    m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('active');});
+});
+</script>
+</body>
+</html>
